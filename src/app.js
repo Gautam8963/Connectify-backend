@@ -15,6 +15,7 @@ app.use("/try",(req,res)=>{
 })
 
 app.get("/user",(req,res)=>{
+    console.log(req.query)
     res.send({
         firstName: "Gautam",
         lastname: "Dhodi"

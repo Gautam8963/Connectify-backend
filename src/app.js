@@ -2,12 +2,20 @@ const express = require('express');
 
 const app = express();
 
+const {adminAuth,userAuth} = require('./middlewares/auth')
+
 app.use( "/test",(req,res) => {
     res.send("i am sending response ....")
 } )
 
 app.use("/hi",(req,res)=>{
     res.send("hello")
+})
+
+app.use("/admin",adminAuth)
+
+app.use("/admin",(req,res)=>{
+    res.send("You are auhtorized user !!!!!")
 })
 
 app.use("/try",(req,res)=>{

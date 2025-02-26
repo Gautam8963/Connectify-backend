@@ -2,42 +2,16 @@ const express = require('express');
 
 const app = express();
 
-const {adminAuth,userAuth} = require('./middlewares/auth')
+const connectDB = require("./config/database")
 
-app.use( "/test",(req,res) => {
-    res.send("i am sending response ....")
-} )
-
-app.use("/hi",(req,res)=>{
-    res.send("hello")
-})
-
-app.use("/admin",adminAuth)
-
-app.use("/admin",(req,res)=>{
-    res.send("You are auhtorized user !!!!!")
-})
-
-app.use("/try",(req,res)=>{
-    res.send("try and testes api")
-})
-
-app.get("/user",(req,res)=>{
-    console.log(req.query)
-    res.send({
-        firstName: "Gautam",
-        lastname: "Dhodi"
+connectDB()
+    .then( ()=>{
+        console.log("Database is connected");
     })
-})
-
-app.post("/user",(req,res)=>{
-    res.send("Requested Posted Successfully")
-})
-
-app.patch("/user",(req,res)=>{
-    res.send("Requested patched successfully")
-})
-
+    .catch((err) => {
+        console.error("Database cannot be connected");
+    });
+      
 app.listen(1111,()=>{
     console.log("Server has started on port 1111 .....")
 })

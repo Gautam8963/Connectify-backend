@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
     emailId: {type: String},
     password: {type: String},
     age: {type: Number},
-    gender: {type: String}
+    gender: {type: String},
+    createdAt: {type: Date,default: Date.now,}
 })
 
 module.exports = mongoose.model("User", userSchema);

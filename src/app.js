@@ -2,22 +2,46 @@ const express = require('express');
 
 const app = express();
 
-const connectDB = require("./config/database");
-const user = require('./models/user');
+app.use(express.json())
 
-app.post("/signup", async (req,res)=>{
-    const user = new user( {
-        firstName : "Gautam",
-        lastName : "Dhodi",
-        emailId : "gautamdhodi02@gmail.com",
-        password : "gautam123",
-        age : 20,
-        gender : "male",
-    })
-    await user.save();
-    res.send("User added successfully ....")
+const connectDB = require("./config/database");
+const User = require('./models/user');
+
+app.get("/get",(req,res)=>{
+    const data = req.body;
+    console.log(data)
 })
 
+
+
+app.post("/signup", async (req,res)=>{
+    const user = new User( {
+        firstName : "Siddarth",
+        lastName : "jain",
+        emailId : "sid@gmail.com",
+        password : "sid123",
+        age : 20,
+        gender : "male",
+    });
+
+    try {
+        await user.save();
+        res.send("User added successfully ....")
+    } catch (err) {
+        res.status(400).send("Error saving the user :" + err.message);
+    }
+});
+
+app.get("/userData", async (req,res)=>{
+    const data = req.body.email;
+    try {
+        const users = await User.find({})
+        res.send(users)
+    }
+    catch(err){
+        err.status(400).send("Something went wrong")
+    }
+})
 
 connectDB()
     .then( ()=>{

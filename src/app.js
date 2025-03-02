@@ -69,14 +69,12 @@ app.post("/login", async (req,res) => {
 app.get("/user", async (req,res)=>{
     const email = req.body.email;
     try {
-        console.log(email);
         const user = await User.findOne({emailId:email})
         if(!user){
             res.status(400).send("User not found");
         } else{
             res.send(users)
         }
-
     }
     catch(err){
         err.status(400).send("Something went wrong")

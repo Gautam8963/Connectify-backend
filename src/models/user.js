@@ -1,5 +1,5 @@
-const mongoose = require("mongoose")
-
+const mongoose = require("mongoose");
+const validator = require('validator');
 const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
@@ -65,6 +65,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl: {
         type: String,
+        default: "https://pinnacle.works/dummy-image/",
         validate(value) {
             if (!validator.isURL(value)) {
                 throw new Error("URL is not valid"+value)

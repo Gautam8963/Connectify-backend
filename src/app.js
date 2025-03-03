@@ -60,10 +60,14 @@ app.post("/login", async (req,res) => {
         if(isPasswordValid){
 
             // Create a JWT Token
-            const token = await jwt.sign({_id: user._id}, "DEV@Tinder$790");
+            const token = await jwt.sign({_id: user._id}, "DEV@Tinder$790",{
+                expiresIn: '1d',
+            });
 
             // Add the token to the cookie and sendthe response back to the server
-            res.cookie("token",token);
+            res.cookie("token",token,{
+                expires: new Date(Date.now() + 8 * 3600000)
+            });
 
             res.send("Login Successfully!!");
         } else {
@@ -96,72 +100,11 @@ app.get("/profile", userAuth, async (req,res) => {
     }
 });
 
-// GET USER BY EMAIL 
-app.get("/user", async (req,res)=>{
-    const email = req.body.email;
-    try {
-        const user = await User.findOne({emailId:email})
-        if(!user){
-            res.status(400).send("User not found");
-        } else{
-            res.send(users)
-        }
-    }
-    catch(err){
-        err.status(400).send("Something went wrong")
-    }
-});
-
-
-// FEED API - ALL USERS DATA
-app.get("/user", async (req,res)=>{
-    try {
-        const users = await User.find({})
-        res.send(users)
-    }
-    catch(err){
-        err.status(400).send("Something went wrong")
-    }
-});
-
-
-// UPDATE data of the user
-app.patch("/user/:userId", async(req,res)=>{
-    const userId = req.params?.userId;
-    const data = req.body;
-
-
-
-    try {
-        const ALLOWED_UPDATES = [
-            "photoUrl",
-            "about",
-            "gender",
-            "age"
-        ]
-
-        const isUpdateAllowed = Object
-        .keys(data)
-        .every(k => ALLOWED_UPDATES
-        .includes(k));
+// SEND THE CONNCECTION REQUEST
+app.post("/sendConnectionRequest",userAuth, (req,res) => {
     
-        if(!isUpdateAllowed) {
-            throw new Error("This updates are not allowed")
-        }
-
-        if(data?.skills?.length > 10) {
-            throw new Error("Skills cannot be more than 10")
-        }
-
-        const user = await User.findByIdAndUpdate({_id: userId}, data, {
-            returnDocument: "after",
-            runValidators: true,
-        });
-        res.send("User updated successfully");
-    } catch (err) {
-        res.status(400).send("Something went wromng");
-    }
-});
+    res.send("Sent the connection request")
+})
 
 connectDB()
     .then( ()=>{

@@ -27,16 +27,17 @@ const userSchema = new mongoose.Schema({
             if (!validator.isEmail(value)) {
                 throw new Error("Email id is not valid"+value)
             }
-        },
-        validate: {
-            validator: async function (value) {
-                const user = await this.constructor.findOne({ emailId: value });
-                if (user) {
-                    throw new Error("Email already exists.");
-                }
-            },
-            message: "Email already exists."
         }
+        // ,
+        // validate: {
+        //     validator: async function (value) {
+        //         const user = await this.constructor.find({ emailId: value });
+        //         if (user) {
+        //             throw new Error("Email already existszzz.");
+        //         }
+        //     },
+        //     message: "Email already exists."
+        // }
     },
     password: {
         type: String,

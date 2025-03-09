@@ -10,9 +10,10 @@ authRouter.post("/signup", async (req,res)=>{
         // VALIDATION OF DATA
         validateSignUpData(req);
 
-        const {firstName, lastName, emailId ,password} = req.body;
+        const {firstName, lastName, emailId ,password, photoUrl,about, skills, age, gender} = req.body;
         //ENCYPT THE PASSWORD
 
+        // console.log(req)
         const passwordHash = await bcrypt.hash(password,10);
         // console.log(passwordHash);
 
@@ -22,6 +23,11 @@ authRouter.post("/signup", async (req,res)=>{
             lastName,
             emailId,
             password: passwordHash,
+            photoUrl,
+            about,
+            skills,
+            age,
+            gender
         });
 
         const savedUser = await user.save();
@@ -31,13 +37,13 @@ authRouter.post("/signup", async (req,res)=>{
             expires: new Date(Date.now() + 8 * 3600000)
         });
         
-        res.json({
+        return res.json({
             message: "User added successfully....",
             data: savedUser
-        })
+        });
         res.send("User added successfully ....")
     } catch (err) {
-        res.status(400).send("Error saving the user :" + err.message);
+        return res.status(400).send("Error saving the user :" + err.message);
     }
 });
 

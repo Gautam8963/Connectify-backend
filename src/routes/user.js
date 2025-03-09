@@ -46,7 +46,7 @@ useRouter.get(
                 .populate("fromUserId", USER_SAFE_DATA)
                 .populate("toUserId", USER_SAFE_DATA);
 
-            console.log(connectionRequests)
+            // console.log(connectionRequests)
 
             const data = connectionRequests.map((row) => {
                 if (row.fromUserId.toString() === loggedInUser.toString()) {

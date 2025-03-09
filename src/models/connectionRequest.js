@@ -42,4 +42,5 @@ const connectionRequestModel = new mongoose.model(
     connectionRequestSchema
 );
 
-module.exports = mongoose.model("connectionrequests", connectionRequestSchema);
+// module.exports = mongoose.model("connectionrequests", connectionRequestSchema);
+module.exports = connectionRequestModel;

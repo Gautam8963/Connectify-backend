@@ -8,6 +8,7 @@ const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 const { userAuth }= require("./middlewares/auth")
 const cors = require('cors')
+require("dotenv").config()
 
 app.use(
     cors({
@@ -36,7 +37,7 @@ connectDB()
         console.error("Database cannot be connected");
     });
       
-    app.listen(1111,()=>{
+    app.listen(process.env.PORT,()=>{
         console.log("Server has started on port 1111 .....")
     })
 

@@ -9,6 +9,8 @@ const jwt = require("jsonwebtoken");
 const { userAuth }= require("./middlewares/auth")
 const cors = require('cors')
 require("dotenv").config()
+const http = require('http')
+const initializeSocket = require('./utils/socket')
 
 app.use(
     cors({
@@ -29,6 +31,11 @@ app.use("/",profileRouter);
 app.use("/",requestsRouter);
 app.use("/",useRouter);
 
+
+const server = http.createServer(app);
+
+initializeSocket(server)
+
 connectDB()
     .then( ()=>{
         console.log("Database is connected");
@@ -37,7 +44,7 @@ connectDB()
         console.error("Database cannot be connected");
     });
       
-    app.listen(process.env.PORT,()=>{
+    server.listen(process.env.PORT,()=>{
         console.log("Server has started on port 1111 .....")
     })
 

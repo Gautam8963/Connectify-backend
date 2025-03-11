@@ -1,5 +1,7 @@
 const  jwt  = require('jsonwebtoken');
 const User = require("../models/user");
+require("dotenv").config()
+
 
 const userAuth = async (req,res,next)=>{
     // Read the token from the req cookies
@@ -9,7 +11,7 @@ const userAuth = async (req,res,next)=>{
             return res.status(401).send("Token is not valid !!");
         }
 
-        const decodeObj = await jwt.verify(token, SECRET_TOKEN_KEY);
+        const decodeObj = await jwt.verify(token, "DEV@Tinder$790");
 
         const { _id } = decodeObj;
 

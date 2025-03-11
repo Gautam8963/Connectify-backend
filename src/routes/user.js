@@ -1,6 +1,7 @@
 const express = require("express");
 const useRouter = express.Router();
 const User = require('../models/user');
+require("dotenv").config()
 
 const { userAuth } = require('../middlewares/auth');
 const ConnectionRequest = require('../models/connectionRequest')

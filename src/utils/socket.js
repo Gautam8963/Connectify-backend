@@ -14,15 +14,14 @@ const getSecretRoomId = (userId, targetUserId) => {
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: [
-        process.env.FRONTEND_URL || "http://localhost:5173",
-        "https://connectify-frontend-lime.vercel.app",
-        "https://admin.socket.io"
-      ],
+      origin: true, // Allow all origins for now to debug
       credentials: true,
-      methods: ["GET", "POST"],
-      allowedHeaders: ["Content-Type", "Authorization"]
+      methods: ["GET", "POST", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
+      transports: ['websocket', 'polling']
     },
+    pingTimeout: 60000, // Increase ping timeout
+    pingInterval: 25000, // Increase ping interval
   });
 
   instrument(io, {

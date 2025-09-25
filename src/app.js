@@ -8,17 +8,12 @@ const http = require("http");
 const axios = require("axios");
 
 // ✅ Use env var for frontend origin (Netlify URL or localhost fallback)
-// Enable pre-flight requests for all routes
-app.options('*', cors());
-
 app.use(
   cors({
-    origin: true, // Allow all origins for now to debug
+    origin: "http://localhost:5173",
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token', 'Origin', 'Accept'],
-    exposedHeaders: ['Content-Range', 'X-Content-Range'],
-    maxAge: 600 // Increase preflight cache time to 10 minutes
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
   })
 );
 

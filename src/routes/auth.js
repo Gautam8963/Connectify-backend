@@ -13,7 +13,6 @@ authRouter.post("/signup", async (req,res)=>{
         const {firstName, lastName, emailId ,password, photoUrl,about, skills, age, gender} = req.body;
         //ENCYPT THE PASSWORD
 
-        // console.log(req)
         const passwordHash = await bcrypt.hash(password,10);
         // console.log(passwordHash);
 
@@ -33,8 +32,11 @@ authRouter.post("/signup", async (req,res)=>{
         const savedUser = await user.save();
         const token = await savedUser.getJWT();
 
-        res.cookie("token",token,{
-            expires: new Date(Date.now() + 8 * 3600000)
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
         });
         
         return res.json({
@@ -48,37 +50,72 @@ authRouter.post("/signup", async (req,res)=>{
 });
 
 authRouter.post("/login", async (req,res) => {
-
-    try{
+    try {
+        console.log("Login attempt with body:", req.body);
         const {emailId, password} = req.body;
+        
+        if (!emailId || !password) {
+            return res.status(400).json({ 
+                status: "error",
+                message: "Email and password are required" 
+            });
+        }
+
         const user = await User.findOne({emailId: emailId});
+        // console.log("User found:", user ? "Yes" : "No");
 
         if(!user){
-            throw new Error("Invalid Credentials ")
-        }
-        const isPasswordValid =  await user.validatePassword(password);
-
-        if(isPasswordValid){
-
-            // Create a JWT Token
-            const token = await user.getJWT();
-
-            // Add the token to the cookie and sendthe response back to the server
-            res.cookie("token",token,{
-                expires: new Date(Date.now() + 8 * 3600000)
+            return res.status(400).json({ 
+                status: "error",
+                message: "Account not found. Please sign up first." 
             });
-
-            // res.send("Login Successfully!!");
-            res.json({
-                message:"Logged in successfully",
-                data:user
-            })
-        } else {
-            throw new Error("Invalid Credentials");
         }
+
+        const isPasswordValid = await user.validatePassword(password);
+        // console.log("Password valid:", isPasswordValid ? "Yes" : "No");
+
+        if(!isPasswordValid) {
+            return res.status(400).json({ 
+                status: "error",
+                message: "Invalid password" 
+            });
+        }
+
+        // Create a JWT Token
+        const token = await user.getJWT();
+
+        // Add the token to the cookie
+        res.cookie("token", token, {
+            expires: new Date(Date.now() + 8 * 3600000),
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
+        });
+
+        // Send success response
+        return res.json({
+            status: "success",
+            message: "Logged in successfully",
+            data: {
+                user: {
+                    _id: user._id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    emailId: user.emailId,
+                    photoUrl: user.photoUrl,
+                    about: user.about,
+                    skills: user.skills,
+                    isPremium: user.isPremium
+                }
+            }
+        });
 
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message);
+        console.error("Login error:", err);
+        return res.status(400).json({ 
+            status: "error",
+            message: "An error occurred during login. Please try again." 
+        });
     }
 });
 

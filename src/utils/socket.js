@@ -14,14 +14,9 @@ const getSecretRoomId = (userId, targetUserId) => {
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: true, // Allow all origins for now to debug
-      credentials: true,
-      methods: ["GET", "POST", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "Origin", "Accept"],
-      transports: ['websocket', 'polling']
-    },
-    pingTimeout: 60000, // Increase ping timeout
-    pingInterval: 25000, // Increase ping interval
+      origin: ["http://localhost:5173", "https://admin.socket.io"],
+      credentials: true
+    }
   });
 
   instrument(io, {
@@ -33,7 +28,7 @@ const initializeSocket = (server) => {
   io.on("connection", (socket) => {
     socket.on("joinChat", ({ firstName, userId, targetUserId }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(firstName + " joined Room : " + roomId);
+      // console.log(firstName + " joined Room : " + roomId);
       socket.join(roomId);
     });
 
@@ -43,7 +38,7 @@ const initializeSocket = (server) => {
         // Save messages to the database
         try {
           const roomId = getSecretRoomId(userId, targetUserId);
-          console.log(firstName + " " + text);
+          // console.log(firstName + " " + text);
 
           // TODO: Check if userId & targetUserId are friends
 
@@ -73,13 +68,13 @@ const initializeSocket = (server) => {
  // Video call functionality
     socket.on("joinVideoRoom", ({ firstName, userId, targetUserId }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(firstName + " joined Video Room: " + roomId);
+      // console.log(firstName + " joined Video Room: " + roomId);
       socket.join(roomId);
     });
 
     socket.on("callUser", ({ userId, targetUserId, firstName, lastName, signal }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(`${firstName} ${lastName} is calling user ${targetUserId}`);
+      // console.log(`${firstName} ${lastName} is calling user ${targetUserId}`);
       
       io.to(roomId).emit("callUser", {
         from: userId,
@@ -91,7 +86,7 @@ const initializeSocket = (server) => {
 
     socket.on("answerCall", ({ userId, targetUserId, firstName, lastName, signal }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(`${firstName} ${lastName} answered call from ${targetUserId}`);
+      // console.log(`${firstName} ${lastName} answered call from ${targetUserId}`);
       
       io.to(roomId).emit("callAccepted", {
         from: userId,
@@ -106,7 +101,7 @@ const initializeSocket = (server) => {
 
     socket.on("endCall", ({ userId, targetUserId }) => {
       const roomId = getSecretRoomId(userId, targetUserId);
-      console.log(`Call ended between ${userId} and ${targetUserId}`);
+      // console.log(`Call ended between ${userId} and ${targetUserId}`);
       
       io.to(roomId).emit("callEnded");
     });
@@ -114,13 +109,13 @@ const initializeSocket = (server) => {
  // Video call functionality
  socket.on("joinVideoRoom", ({ firstName, userId, targetUserId }) => {
   const roomId = getSecretRoomId(userId, targetUserId);
-  console.log(firstName + " joined Video Room: " + roomId);
+  // console.log(firstName + " joined Video Room: " + roomId);
   socket.join(roomId);
 });
 
 socket.on("callUser", ({ userId, targetUserId, firstName, lastName, signal }) => {
   const roomId = getSecretRoomId(userId, targetUserId);
-  console.log(`${firstName} ${lastName} is calling user ${targetUserId}`);
+  // console.log(`${firstName} ${lastName} is calling user ${targetUserId}`);
   
   io.to(roomId).emit("callUser", {
     from: userId,
@@ -132,7 +127,7 @@ socket.on("callUser", ({ userId, targetUserId, firstName, lastName, signal }) =>
 
 socket.on("answerCall", ({ userId, targetUserId, firstName, lastName, signal }) => {
   const roomId = getSecretRoomId(userId, targetUserId);
-  console.log(`${firstName} ${lastName} answered call from ${targetUserId}`);
+  // console.log(`${firstName} ${lastName} answered call from ${targetUserId}`);
   
   io.to(roomId).emit("callAccepted", {
     from: userId,
@@ -147,7 +142,7 @@ socket.on("answerCall", ({ userId, targetUserId, firstName, lastName, signal }) 
 
 socket.on("endCall", ({ userId, targetUserId }) => {
   const roomId = getSecretRoomId(userId, targetUserId);
-  console.log(`Call ended between ${userId} and ${targetUserId}`);
+  // console.log(`Call ended between ${userId} and ${targetUserId}`);
   
   io.to(roomId).emit("callEnded");
 });

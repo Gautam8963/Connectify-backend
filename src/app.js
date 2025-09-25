@@ -5,12 +5,18 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const http = require("http");
+const axios = require("axios");
 
 // ✅ Use env var for frontend origin (Netlify URL or localhost fallback)
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin: [
+      process.env.FRONTEND_URL || "http://localhost:5173",
+      "https://connectify-frontend-lime.vercel.app"
+    ],
     credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-access-token']
   })
 );
 
@@ -45,3 +51,11 @@ connectDB()
   .catch((err) => {
     console.error("❌ Database cannot be connected!!", err);
   });
+
+axios.create({
+  baseURL: 'https://connectify-backend-1-c1hv.onrender.com',
+  withCredentials: true,
+  headers: {
+    'Content-Type': 'application/json'
+  }
+});

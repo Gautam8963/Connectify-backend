@@ -14,8 +14,14 @@ const getSecretRoomId = (userId, targetUserId) => {
 const initializeSocket = (server) => {
   const io = socket(server, {
     cors: {
-      origin: [process.env.FRONTEND_URL || "http://localhost:5173", "https://admin.socket.io"],
-      credentials: true
+      origin: [
+        process.env.FRONTEND_URL || "http://localhost:5173",
+        "https://connectify-frontend-lime.vercel.app",
+        "https://admin.socket.io"
+      ],
+      credentials: true,
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type", "Authorization"]
     },
   });
 

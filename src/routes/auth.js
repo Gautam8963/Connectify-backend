@@ -33,10 +33,10 @@ authRouter.post("/signup", async (req,res)=>{
         const token = await savedUser.getJWT();
 
         res.cookie("token", token, {
-            expires: new Date(Date.now() + 8 * 3600000),
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax'
+        expires: new Date(Date.now() + 8 * 3600000),
+        httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // true on Render
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // ✅ allow cross-site cookies in production
         });
         
         return res.json({

@@ -32,6 +32,9 @@ app.use("/", profileRouter);
 app.use("/", requestRouter);
 app.use("/", userRouter);
 app.use("/", chatRouter);
+app.get("/", (req, res) => {
+  res.send("Backend is running on Render ✅");
+});
 
 const server = http.createServer(app);
 initializeSocket(server);

@@ -5,7 +5,7 @@ const { userAuth } = require("../middlewares/auth");
 const ConnectionRequest = require("../models/connectionRequest");
 const User = require("../models/user");
 
-const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills";
+const USER_SAFE_DATA = "firstName lastName photoUrl age gender about skills experienceLevel interests";
 
 // Get all the pending connection request for the loggedIn user
 userRouter.get("/user/requests/received", userAuth, async (req, res) => {
@@ -64,27 +64,68 @@ userRouter.get("/feed", userAuth, async (req, res) => {
     limit = limit > 50 ? 50 : limit;
     const skip = (page - 1) * limit;
 
+    // find all connection requests involving this user
     const connectionRequests = await ConnectionRequest.find({
       $or: [{ fromUserId: loggedInUser._id }, { toUserId: loggedInUser._id }],
     }).select("fromUserId  toUserId");
 
+    // create a set of user IDs to hide from feed
     const hideUsersFromFeed = new Set();
     connectionRequests.forEach((req) => {
       hideUsersFromFeed.add(req.fromUserId.toString());
       hideUsersFromFeed.add(req.toUserId.toString());
     });
 
+    // fetch all potential matches (excluding self and connected users)
     const users = await User.find({
       $and: [
         { _id: { $nin: Array.from(hideUsersFromFeed) } },
         { _id: { $ne: loggedInUser._id } },
       ],
-    })
-      .select(USER_SAFE_DATA)
-      .skip(skip)
-      .limit(limit);
+    }).select(USER_SAFE_DATA);
 
-    res.json({ data: users });
+    // simple recommendation logic - calculate match score for each user
+    const usersWithScore = users.map((user) => {
+      let score = 0;
+
+      // check common skills
+      if (loggedInUser.skills && user.skills) {
+        const commonSkills = loggedInUser.skills.filter((skill) =>
+          user.skills.includes(skill)
+        );
+        score += commonSkills.length; // +1 for each common skill
+      }
+
+      // check common interests
+      if (loggedInUser.interests && user.interests) {
+        const commonInterests = loggedInUser.interests.filter((interest) =>
+          user.interests.includes(interest)
+        );
+        score += commonInterests.length; // +1 for each common interest
+      }
+
+      // bonus points if experience level matches
+      if (
+        loggedInUser.experienceLevel &&
+        user.experienceLevel &&
+        loggedInUser.experienceLevel === user.experienceLevel
+      ) {
+        score += 2; // +2 for matching experience level
+      }
+
+      return {
+        ...user.toObject(),
+        matchScore: score,
+      };
+    });
+
+    // sort users by score (highest first)
+    usersWithScore.sort((a, b) => b.matchScore - a.matchScore);
+
+    // apply pagination after sorting
+    const paginatedUsers = usersWithScore.slice(skip, skip + limit);
+
+    res.json({ data: paginatedUsers });
   } catch (err) {
     res.status(400).json({ message: err.message });
   }

@@ -13,7 +13,7 @@ const userSchema = new mongoose.Schema(
     },
     lastName: {
       type: String,
-            required: true,
+      required: true,
     },
     emailId: {
       type: String,
@@ -58,22 +58,29 @@ const userSchema = new mongoose.Schema(
     },
     membershipType: {
       type: String,
-    },photoUrl: {
-        type: String,
-        trim: true, // Removes extra spaces at the start or end
-        default: "",
-        validate: {
-          validator: (value) => {
-            return value === "" || validator.isURL(value);
-          },
-          message: (props) => `Invalid Photo URL: ${props.value}`,
+    }, photoUrl: {
+      type: String,
+      trim: true, // Removes extra spaces at the start or end
+      default: "",
+      validate: {
+        validator: (value) => {
+          return value === "" || validator.isURL(value);
         },
+        message: (props) => `Invalid Photo URL: ${props.value}`,
       },
+    },
     about: {
       type: String,
       default: "This is a default about of the user!",
     },
     skills: {
+      type: [String],
+    },
+    experienceLevel: {
+      type: String,
+      enum: ["beginner", "intermediate", "advanced"],
+    },
+    interests: {
       type: [String],
     },
   },
@@ -84,8 +91,8 @@ const userSchema = new mongoose.Schema(
 
 userSchema.methods.getJWT = async function () {
   const user = this;
-  
-const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+
+  const token = jwt.sign({ _id: this._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
   return token;
 };

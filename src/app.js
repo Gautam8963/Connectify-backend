@@ -9,7 +9,7 @@ const http = require("http");
 // ✅ Allow local frontend during development
 app.use(
   cors({
-    origin: "http://localhost:5173",  // frontend is local for now
+    origin: ["http://localhost:5173", "https://connectify-frontend-snowy.vercel.app/"], // frontend is local for now
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
